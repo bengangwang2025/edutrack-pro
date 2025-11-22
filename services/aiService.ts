@@ -1,18 +1,12 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { Course, Record, Student } from "../types";
+import { getEnvSafe } from "./storageService";
 
 const getAIClient = () => {
   // In a real deployed app, this would be proxied or user-provided if strictly client-side.
-  // Per instructions, using process.env.API_KEY
-  // Safely access process.env
-  let apiKey = '';
-  try {
-    // @ts-ignore
-    apiKey = (typeof process !== 'undefined' && process.env && process.env.API_KEY) || '';
-  } catch (e) {
-    console.warn("Error accessing process.env", e);
-  }
+  // Use safe helper
+  const apiKey = getEnvSafe("API_KEY");
   
   if (!apiKey) {
     console.warn("Gemini API Key is missing. AI features will not work.");
@@ -27,7 +21,7 @@ export const analyzeEducationData = async (
   records: Record[]
 ): Promise<string> => {
   const ai = getAIClient();
-  if (!ai) return "API Key 未配置。请使用有效的 Google Gemini API Key 部署。";
+  if (!ai) return "API Key 未配置。请在 GitHub 环境变量中配置 API_KEY。";
 
   // Prepare data summary for the prompt
   const summary = students.map(s => {

@@ -8,7 +8,6 @@ import {
   Settings, 
   BrainCircuit, 
   Plus, 
-  DollarSign, 
   Calendar as CalendarIcon,
   Check,
   X,
@@ -29,9 +28,7 @@ import {
   ChevronLeft,
   ChevronRight as ChevronRightIcon,
   Wallet,
-  CreditCard,
   Copy,
-  ExternalLink,
   ShieldCheck,
   ShieldAlert,
   Key,
@@ -331,17 +328,8 @@ const App = () => {
       }
       const password = prompt("请输入管理员访问密码:");
       
-      // SECURITY: Use environment variable for admin password
-      // To use this feature, set process.env.ADMIN_PASSWORD in your build environment
-      // Safe access to prevent runtime errors in browser
-      let targetPassword = null;
-      try {
-        // @ts-ignore
-        if (typeof process !== 'undefined' && process.env) {
-            // @ts-ignore
-            targetPassword = process.env.ADMIN_PASSWORD;
-        }
-      } catch (e) {}
+      // SECURITY: Use safe env helper
+      const targetPassword = DB.getEnvSafe("ADMIN_PASSWORD");
 
       if (targetPassword && password === targetPassword) {
           setIsAdminMode(true);
@@ -743,7 +731,6 @@ const App = () => {
                       />
                       <Button variant="premium" onClick={handleActivateLicense}>激活</Button>
                   </div>
-                  {/* REMOVED DEMO KEY HINT FOR PRODUCTION */}
               </div>
           </div>
       </Modal>

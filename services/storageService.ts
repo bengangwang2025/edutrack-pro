@@ -12,20 +12,41 @@ const STORAGE_KEYS = {
 
 // --- Security & Environment ---
 
-// Helper to safely access environment variables without crashing in browser
-const getEnvSafe = (key: string) => {
+// Helper to safely access environment variables across different build tools (Vite, CRA, Next, etc.)
+export const getEnvSafe = (key: string): string | undefined => {
+  // 1. Try Vite standard (import.meta.env)
   try {
     // @ts-ignore
-    return (typeof process !== 'undefined' && process.env) ? process.env[key] : undefined;
-  } catch (e) {
-    return undefined;
-  }
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[`VITE_${key}`]) {
+      // @ts-ignore
+      return import.meta.env[`VITE_${key}`];
+    }
+  } catch (e) {}
+
+  // 2. Try React App standard (process.env.REACT_APP_)
+  try {
+    // @ts-ignore
+    if (typeof process !== 'undefined' && process.env && process.env[`REACT_APP_${key}`]) {
+      // @ts-ignore
+      return process.env[`REACT_APP_${key}`];
+    }
+  } catch (e) {}
+
+  // 3. Try Plain Node/General standard (process.env)
+  try {
+    // @ts-ignore
+    if (typeof process !== 'undefined' && process.env && process.env[key]) {
+      // @ts-ignore
+      return process.env[key];
+    }
+  } catch (e) {}
+
+  return undefined;
 };
 
 // Salt for simple checksum generation (Anti-tamper)
 // SECURITY UPDATE: Use environment variable so the secret isn't exposed in GitHub code
-// If env var is not set (e.g. dev mode), fallback to a default, but DO NOT use this default in production
-const SALT = getEnvSafe("LICENSE_SALT") || "DEFAULT_DEV_SALT"; 
+const SALT = getEnvSafe("LICENSE_SALT") || "DEFAULT_DEV_SALT_DO_NOT_USE_IN_PROD"; 
 
 export const isWeChatBrowser = (): boolean => {
   const ua = navigator.userAgent.toLowerCase();
