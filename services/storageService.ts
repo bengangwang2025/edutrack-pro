@@ -17,27 +17,20 @@ export const getEnvSafe = (key: string): string | undefined => {
   // 1. Try Vite standard (import.meta.env)
   try {
     // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[`VITE_${key}`]) {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
       // @ts-ignore
-      return import.meta.env[`VITE_${key}`];
+      const val = import.meta.env[`VITE_${key}`] || import.meta.env[key];
+      if (val) return val;
     }
   } catch (e) {}
 
-  // 2. Try React App standard (process.env.REACT_APP_)
+  // 2. Try React App / Node standard (process.env)
   try {
     // @ts-ignore
-    if (typeof process !== 'undefined' && process.env && process.env[`REACT_APP_${key}`]) {
+    if (typeof process !== 'undefined' && process.env) {
       // @ts-ignore
-      return process.env[`REACT_APP_${key}`];
-    }
-  } catch (e) {}
-
-  // 3. Try Plain Node/General standard (process.env)
-  try {
-    // @ts-ignore
-    if (typeof process !== 'undefined' && process.env && process.env[key]) {
-      // @ts-ignore
-      return process.env[key];
+      const val = process.env[`REACT_APP_${key}`] || process.env[key];
+      if (val) return val;
     }
   } catch (e) {}
 
