@@ -1,10 +1,19 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { Course, Record, Student } from "../types";
 
 const getAIClient = () => {
   // In a real deployed app, this would be proxied or user-provided if strictly client-side.
   // Per instructions, using process.env.API_KEY
-  const apiKey = process.env.API_KEY || '';
+  // Safely access process.env
+  let apiKey = '';
+  try {
+    // @ts-ignore
+    apiKey = (typeof process !== 'undefined' && process.env && process.env.API_KEY) || '';
+  } catch (e) {
+    console.warn("Error accessing process.env", e);
+  }
+  
   if (!apiKey) {
     console.warn("Gemini API Key is missing. AI features will not work.");
     return null;

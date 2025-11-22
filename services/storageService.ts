@@ -12,10 +12,20 @@ const STORAGE_KEYS = {
 
 // --- Security & Environment ---
 
+// Helper to safely access environment variables without crashing in browser
+const getEnvSafe = (key: string) => {
+  try {
+    // @ts-ignore
+    return (typeof process !== 'undefined' && process.env) ? process.env[key] : undefined;
+  } catch (e) {
+    return undefined;
+  }
+};
+
 // Salt for simple checksum generation (Anti-tamper)
 // SECURITY UPDATE: Use environment variable so the secret isn't exposed in GitHub code
 // If env var is not set (e.g. dev mode), fallback to a default, but DO NOT use this default in production
-const SALT = process.env.LICENSE_SALT || "DEFAULT_DEV_SALT"; 
+const SALT = getEnvSafe("LICENSE_SALT") || "DEFAULT_DEV_SALT"; 
 
 export const isWeChatBrowser = (): boolean => {
   const ua = navigator.userAgent.toLowerCase();

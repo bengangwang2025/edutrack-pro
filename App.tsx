@@ -333,7 +333,15 @@ const App = () => {
       
       // SECURITY: Use environment variable for admin password
       // To use this feature, set process.env.ADMIN_PASSWORD in your build environment
-      const targetPassword = process.env.ADMIN_PASSWORD;
+      // Safe access to prevent runtime errors in browser
+      let targetPassword = null;
+      try {
+        // @ts-ignore
+        if (typeof process !== 'undefined' && process.env) {
+            // @ts-ignore
+            targetPassword = process.env.ADMIN_PASSWORD;
+        }
+      } catch (e) {}
 
       if (targetPassword && password === targetPassword) {
           setIsAdminMode(true);
