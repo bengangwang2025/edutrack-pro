@@ -330,11 +330,16 @@ const App = () => {
           return;
       }
       const password = prompt("请输入管理员访问密码:");
-      if (password === "admin888") {
+      
+      // SECURITY: Use environment variable for admin password
+      // To use this feature, set process.env.ADMIN_PASSWORD in your build environment
+      const targetPassword = process.env.ADMIN_PASSWORD;
+
+      if (targetPassword && password === targetPassword) {
           setIsAdminMode(true);
           alert("已进入代理商管理模式");
       } else if (password) {
-          alert("密码错误");
+          alert("密码错误或未配置管理员密码");
       }
   };
 

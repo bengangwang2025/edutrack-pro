@@ -13,7 +13,9 @@ const STORAGE_KEYS = {
 // --- Security & Environment ---
 
 // Salt for simple checksum generation (Anti-tamper)
-const SALT = "EDUTRACK_PRO_2024_SECRET_SALT_888"; 
+// SECURITY UPDATE: Use environment variable so the secret isn't exposed in GitHub code
+// If env var is not set (e.g. dev mode), fallback to a default, but DO NOT use this default in production
+const SALT = process.env.LICENSE_SALT || "DEFAULT_DEV_SALT"; 
 
 export const isWeChatBrowser = (): boolean => {
   const ua = navigator.userAgent.toLowerCase();
