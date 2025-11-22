@@ -348,6 +348,10 @@ export const saveUserProfile = (user: UserProfile) => {
   localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
 };
 
+export const logoutUser = () => {
+  localStorage.removeItem(STORAGE_KEYS.USER);
+};
+
 export const clearAllData = () => {
   localStorage.removeItem(STORAGE_KEYS.STUDENTS);
   localStorage.removeItem(STORAGE_KEYS.COURSES);

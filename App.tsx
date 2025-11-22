@@ -203,6 +203,7 @@ const App = () => {
   const [isCourseModalOpen, setCourseModalOpen] = useState(false);
   const [isRecordModalOpen, setRecordModalOpen] = useState(false);
   const [isLicenseModalOpen, setLicenseModalOpen] = useState(false);
+  const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   
   // Delete Confirmation State
   const [deleteModal, setDeleteModal] = useState<{
@@ -294,13 +295,17 @@ const App = () => {
       }
   };
 
-  const handleLogout = () => {
-    if(confirm("确定要退出登录吗？")) {
-        setUser(null);
-        localStorage.removeItem('edutrack_user');
-        setAuthForm({ name: '', email: '', password: '' });
-        setIsAdminMode(false);
-    }
+  const handleLogoutRequest = () => {
+    setLogoutModalOpen(true);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleLogoutConfirm = () => {
+      DB.logoutUser();
+      setUser(null);
+      setAuthForm({ name: '', email: '', password: '' });
+      setIsAdminMode(false);
+      setLogoutModalOpen(false);
   };
 
   const handleActivateLicense = () => {
@@ -669,6 +674,29 @@ const App = () => {
               <p className="text-center text-xs text-slate-400">
                   恢复数据时，点击“恢复数据”并粘贴此代码即可（或选择保存的json文件）。
               </p>
+          </div>
+      </Modal>
+
+      {/* Logout Modal */}
+      <Modal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+        title="退出登录"
+      >
+          <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
+                  <LogOut size={32} />
+              </div>
+              <h4 className="text-lg font-medium text-slate-800">
+                  确定要退出当前账号吗？
+              </h4>
+              <p className="text-sm text-slate-500">
+                  退出后需要重新登录才能查看数据。
+              </p>
+              <div className="flex gap-3 pt-4">
+                  <Button variant="secondary" onClick={() => setLogoutModalOpen(false)} fullWidth>取消</Button>
+                  <Button variant="danger" onClick={handleLogoutConfirm} fullWidth>确认退出</Button>
+              </div>
           </div>
       </Modal>
 
@@ -1104,7 +1132,7 @@ const App = () => {
                     </div>
                 </div>
             </div>
-            <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 py-2 text-xs font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+            <button onClick={handleLogoutRequest} className="w-full flex items-center justify-center gap-2 py-2 text-xs font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                 <LogOut size={14} /> 退出登录
             </button>
         </div>
@@ -1528,9 +1556,11 @@ const App = () => {
               <Card className="p-6">
                   <div className="flex items-center justify-between mb-6">
                       <h3 className="text-lg font-bold text-slate-800">个人资料</h3>
-                      {!editProfileMode && (
-                          <button onClick={() => setEditProfileMode(true)} className="text-sm text-primary-600 hover:underline">修改</button>
-                      )}
+                      <div className="flex items-center gap-3">
+                        {!editProfileMode && (
+                            <button onClick={() => setEditProfileMode(true)} className="text-sm text-primary-600 hover:underline">修改</button>
+                        )}
+                      </div>
                   </div>
                   {editProfileMode ? (
                       <div className="space-y-4">
@@ -1567,6 +1597,14 @@ const App = () => {
                                   </Button>
                               }
                           </div>
+                      </div>
+                  )}
+
+                  {!editProfileMode && (
+                      <div className="mt-6 pt-6 border-t border-slate-100">
+                          <Button variant="outline" onClick={handleLogoutRequest} fullWidth className="justify-center border-red-200 text-red-600 hover:bg-red-50">
+                              <LogOut size={18} /> 退出登录
+                          </Button>
                       </div>
                   )}
               </Card>
